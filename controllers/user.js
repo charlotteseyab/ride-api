@@ -16,26 +16,26 @@ export const register = async (req, res, next) => {
         }
 
         const { name, email, password, ...rest } = value;
-        
+
         // Check required fields
         if (!name || !email || !password) {
             return res.status(400).json({ message: "All fields are required" });
         }
-        
+
         // Check password length
         if (password.length < 6) {
             return res.status(400).json({ message: "Password must be at least 6 characters" });
         }
-        
+
         // Check if user already exists
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).json({ message: "User already exists" });
         }
-        
+
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 12);
-        
+
         // Create the user
         const newUser = new User({
             name,
@@ -52,9 +52,9 @@ export const register = async (req, res, next) => {
                 { _id: user._id, email: user.email },
                 process.env.JWT_SECRET,
                 { expiresIn: '1d' });
-            
+
             const response = {
-                token, 
+                token,
                 user
             }
             // Send the response to the client
@@ -92,9 +92,15 @@ export const login = async (req, res, next) => {
 
 export const getProfile = async (req, res, next) => {
     try {
+        // console.log('req.auth:', req.auth);
+        // console.log('req.auth.id:', req.auth.id);
         const user = await User
-            .findById(req.auth.id)
-            .select({ password: false });
+            .findById(req.auth._id)
+            .select({ password: 0 }); // Use 0 instead of false
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
         res.status(200).json(user);
     } catch (error) {
         next(error);

@@ -22,6 +22,10 @@ export const registerValidator = Joi.object({
         password: Joi.string().min(6).required()
     });
 
+    // export const getProfileValidator = Joi.object({
+    //     id: Joi.string().required()
+    // });
+
     export const updateProfileValidator = Joi.object({
         name: Joi.string(),
         email: Joi.string().email(),

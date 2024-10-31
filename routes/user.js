@@ -10,9 +10,9 @@ userRouter.post('/register', register)
 
 userRouter.post('/login', login)
 
-userRouter.get('/profile', isAuthenticated, getProfile)
+userRouter.get('/profile/:id', isAuthenticated, getProfile)
 
-userRouter.patch('/profile',isAuthenticated, hasPermission('updateProfile'), updateProfile)
+userRouter.patch('/profile/:id',isAuthenticated, hasPermission('updateProfile'), updateProfile)
 
 
 userRouter.post('/logout', logout)
