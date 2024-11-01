@@ -12,7 +12,7 @@ userRouter.post('/login', login)
 
 userRouter.get('/profile/:id', isAuthenticated, getProfile)
 
-userRouter.patch('/profile/:id',isAuthenticated, hasPermission('updateProfile'), updateProfile)
+userRouter.patch('/profile/:id',isAuthenticated, hasPermission('update_Profile'), updateProfile)
 
 
 userRouter.post('/logout', logout)

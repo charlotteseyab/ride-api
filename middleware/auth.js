@@ -11,15 +11,15 @@ export const hasPermission = (action) => {
     return async (req, res, next) => {
         try {
             const user = await User.
-                findById(req.auth.id);
+                findById(req.auth._id);
             const permission = permissions.find((value) => value.role === user.role);
-            if (!permssion) {
+            if (!permission) {
                 return res.status(403).json({ message: 'No permission found' });
             }
-            if (permission.actiosns.includes(action)) {
+            if (permission.actions.includes(action)) {
                 next();
             } else {
-                res.status(403).json({ messgae: 'Action not allowed' });
+                res.status(403).json({ message: 'Action not allowed' });
             }
         } catch (error) {
             next(error)

@@ -1,10 +1,12 @@
 export const permissions =[
     {
-        role: 'user',
+        role: 'rider',
         actions: [
             'get_Profile',
             'update_Profile',
             'get_Ride',
+            'update_Profile',
+            'update_Ride'
         ]
     },
     {

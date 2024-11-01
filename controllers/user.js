@@ -110,19 +110,20 @@ export const getProfile = async (req, res, next) => {
 export const updateProfile = async (req, res, next) => {
     try {
         const { error, value } = updateProfileValidator.validate({
-            ...req.body,
-            avatar: req.file?.filename
+            ...req.body
+            // avatar: req.file?.filename
         });
 
         if (error) {
             return res.status(422).json({ error: 'Validation failed', details: error.details });
         }
 
-        const oldUser = await User.findById(req.auth.id);
+        const oldUser = await User.findById(req.auth._id);
+
 
 
         // Update user profile
-        const user = await User.findByIdAndUpdate(req.auth.id, value, { new: true });
+        const user = await User.findByIdAndUpdate(req.auth._id, value, { new: true });
 
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
