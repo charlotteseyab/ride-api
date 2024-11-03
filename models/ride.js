@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 
 const rideSchema = new Schema({
-    riderId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
 
     driverId: { type: Schema.Types.ObjectId, ref: 'User' },
 
@@ -15,13 +15,13 @@ const rideSchema = new Schema({
         coordinates: { type: [Number], required: true }
     },
 
-    fareEstimate: { type: Number, required: true },
+    // fareEstimate: { type: Number, required: true },
 
     distance: { type: Number },  // Optional, calculate based on coordinates
 
     status: {
         type: String,
-        enum: ['requested', 'accepted', 'in-progress', 'completed', 'canceled'],
+        enum: ['requested','pending' ,'accepted', 'in-progress', 'completed', 'canceled'],
         default: 'requested'
     },
 

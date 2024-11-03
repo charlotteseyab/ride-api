@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import userRouter from "./routes/user.js";
+import driverRouter from "./routes/driver.js";
+import rideRouter from "./routes/ride.js";
 
 
 
@@ -16,6 +18,8 @@ app.use(express.json());
 app.use(cors());
 app.use(express.json());
 app.use(userRouter);
+app.use(driverRouter);
+app.use(rideRouter);
 
 
 app.listen(port, () => {
