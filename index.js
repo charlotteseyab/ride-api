@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import userRouter from "./routes/user.js";
 import driverRouter from "./routes/driver.js";
 import rideRouter from "./routes/ride.js";
+import reviewRouter from "./routes/review.js";
 
 
 
@@ -20,6 +21,7 @@ app.use(express.json());
 app.use(userRouter);
 app.use(driverRouter);
 app.use(rideRouter);
+app.use(reviewRouter);
 
 
 app.listen(port, () => {

@@ -1,75 +1,64 @@
 import { Review } from "../models/review.js";
+import { Ride } from "../models/ride.js";
+import { createReviewValidator } from "../validators/review.js";
 
 
 
-export const getAllReviews = async (req, res, next) => {
+
+export const getDriverReviews = async (req, res, next) => {
     try {
-        const reviews = await Review.find();
-        res.status(200).json(reviews)
-    } catch (error) {
-        next(error)
-    }
-}
+        const driverId = req.params._id; // Assuming driver's ID is available in req.user after authentication
 
+        // Find reviews that match the driver's ID
+        const reviews = await Review.find({ driverId });
 
-
-export const getOneReview = async (req, res, next) => {
-    try {
-        const id = req.params.id;
-        const review = await Review.findById(id);
-
-        if (!review) {
-            return res.status(404).json({ msg: `Review with ID ${id} not found` });
+        if (reviews.length === 0) {
+            return res.status(404).json({ message: "No reviews found for this driver" });
         }
 
-        res.status(200).json(review);
+        res.status(200).json(reviews);
     } catch (error) {
         next(error);
     }
 };
 
 
-export const postAllReviews = async (req, res, next) => {
-    try {
-        const reviews = await Review.find();
-        res.status(200).json(reviews)
-    } catch (error) {
-        next(error)
-    }
-}
 
 
-export const updateReview = async (req, res, next) => {
+
+export const postReview = async (req, res, next) => {
     try {
-        const id = (req.params.id);
-        const updateReview = await Review.findOneAndUpdate({ _id: req.params.id },
-            req.body,
-            {
-                new: true,
-            });
-        if (!updateReview) {
-            res.status(400).json({ msg: `Book with ID ${id} not found` })
-        } else {
-            res.status(200).json(reviews)
+        const { rideId, riderId, rating, comment } = req.body;
+
+        // Check if the ride exists and is completed
+        const ride = await Ride.findById(rideId);
+        if (!ride) {
+            return res.status(404).json({ message: "Ride not found" });
+        }
+        
+        // Ensure the ride status is "ended"
+        if (ride.status !== "ended") {
+            return res.status(400).json({ message: "Ride must be ended to post a review" });
         }
 
-    } catch (error) {
-        next(error)
-    }
-}
+        // Post the review without needing a user ID
+        const newReview = new Review({
+            rideId,
+            riderId,
+            rating,
+            comment,
+        });
 
-
-export const deleteOneReview = async (req, res, next) => {
-    try {
-        const id = req.params.id;
-        const deletedReview = await Review.findByIdAndDelete(id);
-
-        if (!deletedReview) {
-            return res.status(404).json({ msg: `Review with ID ${id} not found` });
-        }
-
-        res.status(200).json({ msg: `Review with ID ${id} has been deleted` });
+        const savedReview = await newReview.save();
+        res.status(201).json({ message: "Review posted successfully", review: savedReview });
     } catch (error) {
         next(error);
     }
 };
+
+
+
+
+
+
+
