@@ -8,7 +8,7 @@ const userSchema = new Schema({
 
     password: { type: String, required: true },
 
-    role: { type: String, enum: ['rider', 'driver'], default: 'rider'},
+    role: { type: String, enum: ['rider', 'driver'], default: 'rider' },
 
     phoneNumber: { type: String, required: true },
 
@@ -21,8 +21,12 @@ const userSchema = new Schema({
         licensePlate: String,
         model: String,
         color: String
-    }
-}, { timestamps: true });
+    },
+
+    ghanaCardNumber : {type : String} 
+}, {
+    timestamps: true
+});
 
 userSchema.plugin(toJSON);
 

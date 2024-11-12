@@ -6,13 +6,13 @@ const rideSchema = new Schema({
     driverId: { type: Schema.Types.ObjectId, ref: 'User' },
 
     pickupLocation: {
-        type: { type: String, default: 'Point' },
-        coordinates: { type: [Number], required: true }  // [longitude, latitude]
+        type: { type: String },
+        // coordinates: { type: [Number], required: true }  // [longitude, latitude]
     },
 
     dropoffLocation: {
-        type: { type: String, default: 'Point' },
-        coordinates: { type: [Number], required: true }
+        type: { type: String },
+        // coordinates: { type: [Number], required: true }
     },
 
     // fareEstimate: { type: Number, required: true },

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAvailableRides, acceptRide, startRide, endRide, cancelRide } from "../controllers/driver.js";
+import { getAvailableRides, acceptRide, startRide, endRide, cancelRide, getHistory } from "../controllers/driver.js";
 
 export const driverRouter = Router();
 
@@ -13,5 +13,7 @@ driverRouter.patch("/rides/:rideId/start", startRide);
 driverRouter.patch("/rides/:rideId/end", endRide);
 
 driverRouter.patch("/rides/:rideId/cancel", cancelRide);
+
+driverRouter.get("/rides/:rideId", getHistory);
 
 export default driverRouter;

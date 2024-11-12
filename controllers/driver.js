@@ -96,3 +96,27 @@ export const cancelRide = async (req, res, next) => {
 };
 
 
+export const getHistory = async (req, res, next) => {
+  try {
+    if (!req.auth || !req.auth._id) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const { filter = "{}", limit = 10, skip = 0 } = req.query;
+    const options = {
+      filter: JSON.parse(filter),
+      limit: parseInt(limit),
+      skip: parseInt(skip),
+    };
+
+    const history = await Ride.find({ driverId: req.auth._id }, options);
+    if (!history || history.length === 0) {
+      return res.status(404).json({ message: 'No rides found' });
+    }
+
+    res.status(200).json(history);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};

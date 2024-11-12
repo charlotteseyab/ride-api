@@ -116,7 +116,7 @@ export const cancelRide = async (req, res) => {
         res.status(200).json({
             message: "Ride canceled successfully"
         });
-        
+
     } catch (error) {
         res.status(500).json({ message: "Failed to cancel ride", error });
     }
@@ -144,3 +144,13 @@ export const getRideDetails = async (req, res) => {
     }
 };
 
+export const getHistory = async (req, res) => {
+    try {
+        const history = await Ride.find({ userId: req.auth._id })
+            .select('status amount pickupLocation dropoffLocation createdAt');
+
+        res.status(200).json(history);
+    } catch (error) {
+        res.status(500).json({ message: "Failed to get history", error });
+    }
+};

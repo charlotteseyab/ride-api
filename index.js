@@ -5,6 +5,8 @@ import userRouter from "./routes/user.js";
 import driverRouter from "./routes/driver.js";
 import rideRouter from "./routes/ride.js";
 import reviewRouter from "./routes/review.js";
+import axios from "axios";
+import bodyParser from "body-parser";
 
 
 
@@ -18,6 +20,7 @@ app.use(express.json());
 
 app.use(cors());
 app.use(express.json());
+app.use(bodyParser.json());
 app.use(userRouter);
 app.use(driverRouter);
 app.use(rideRouter);

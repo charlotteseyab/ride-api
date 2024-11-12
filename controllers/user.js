@@ -6,10 +6,12 @@ import { loginValidator, registerValidator, updateProfileValidator } from "../va
 
 
 
+
 const SECRET_KEY = process.env.JWT_SECRET || 'yourSecretKey';
 
 export const register = async (req, res, next) => {
     try {
+
         // Validate request data
         const { error, value } = registerValidator.validate(req.body);
         if (error) {
@@ -53,10 +55,10 @@ export const register = async (req, res, next) => {
                 { _id: user._id, email: user.email },
                 process.env.JWT_SECRET,
                 { expiresIn: '1d' });
-
+            const { password, ...rest } = user._doc
             const response = {
                 token,
-                user
+                ...rest
             }
             // Send the response to the client
             return res.status(201).json(response);
@@ -74,18 +76,31 @@ export const login = async (req, res, next) => {
         if (error) {
             return res.status(422).json({ error: 'Validation failed', details: error.details });
         }
-        const { email, password } = req.body;
-        if (!email || !password) {
+        const { email } = req.body;
+        const userPassword = req.body.password;
+        if (!email || !userPassword) {
             return res.status(400).json({ message: "All fields are required" });
         }
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(400).json({ message: "User does not exist" });
         }
-        const isPasswordMatch = await bcrypt.compare(password, user.password);
-        if (user && isPasswordMatch) {
-            res.status(200).json({ _id: user._id, name: user.name, email: user.email });
+        const isPasswordMatch = await bcrypt.compare(userPassword, user.password);
+
+        // Generate JWT if user login is successful
+        const token = jwt.sign(
+            { _id: user._id, email: user.email },
+            process.env.JWT_SECRET,
+            { expiresIn: '1d' });
+        const { password, ...rest } = user._doc
+        const response = {
+            token,
+            ...rest
         }
+        if (user && isPasswordMatch) {
+            res.status(200).json(response);
+        }
+
     } catch (error) {
         next(error);
     }
@@ -93,11 +108,12 @@ export const login = async (req, res, next) => {
 
 export const getProfile = async (req, res, next) => {
     try {
-        // console.log('req.auth:', req.auth);
-        // console.log('req.auth.id:', req.auth.id);
-        const user = await User
-            .findById(req.auth._id)
-            .select({ password: 0 }); // Use 0 instead of false
+        // Ensure the user ID is available
+        if (!req.auth || !req.auth._id) {
+            return res.status(401).json({ message: "Unauthorized access" });
+        }
+
+        const user = await User.findById(req.auth._id).select({ password: 0 });
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
@@ -107,6 +123,7 @@ export const getProfile = async (req, res, next) => {
         next(error);
     }
 }
+
 
 export const updateProfile = async (req, res, next) => {
     try {
@@ -144,14 +161,14 @@ export const updateProfile = async (req, res, next) => {
 
 export const logout = async (req, res, next) => {
     try {
-      const authorizationHeader = req.headers.authorization;
-      if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ message: 'Invalid authorization header' });
-      }
-      const token = authorizationHeader.split(' ')[1];
-      const blackListedToken = await BlackList.create({ token });
-      res.status(200).json({ message: 'Logout successful' });
+        const authorizationHeader = req.headers.authorization;
+        if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
+            return res.status(401).json({ message: 'Invalid authorization header' });
+        }
+        const token = authorizationHeader.split(' ')[1];
+        const blackListedToken = await BlackList.create({ token });
+        res.status(200).json({ message: 'Logout successful' });
     } catch (error) {
-      next(error);
+        next(error);
     }
-  }
+}

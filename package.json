@@ -14,8 +14,11 @@
   "description": "",
   "dependencies": {
     "@reis/mongoose-to-json": "^3.0.0",
+    "axios": "^1.7.7",
     "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.3",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "express-jwt": "^8.4.1",
     "geolib": "^3.3.4",
@@ -25,6 +28,7 @@
     "mongoose": "^8.7.3",
     "multer": "^1.4.5-lts.1",
     "multer-savefilesorg": "^1.0.2",
+    "node-geocoder": "^4.4.0",
     "paystack": "^2.0.1",
     "stripe": "^17.3.1"
   },
