@@ -55,7 +55,7 @@ export const register = async (req, res, next) => {
                 { _id: user._id, email: user.email },
                 process.env.JWT_SECRET,
                 { expiresIn: '1d' });
-            const { password, ...rest } = user._doc
+            const { password, ...rest } = user.toJSON()
             const response = {
                 token,
                 ...rest
@@ -92,7 +92,7 @@ export const login = async (req, res, next) => {
             { _id: user._id, email: user.email },
             process.env.JWT_SECRET,
             { expiresIn: '1d' });
-        const { password, ...rest } = user._doc
+        const { password, ...rest } = user.toJSON()
         const response = {
             token,
             ...rest
