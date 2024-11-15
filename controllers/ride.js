@@ -13,43 +13,40 @@ export const createRide = async (req, res) => {
             return res.status(400).json({ message: "Invalid request", error });
         }
 
-        const { userId, pickupLocation, dropoffLocation } = value;
+        // Format addresses to include city/region for better geocoding results
+        const formatAddress = (address) => {
+            // If address doesn't include city/region, append it
+            if (!address.toLowerCase().includes('ghana')) {
+                return `${address}, Ghana`;
+            }
+            return address;
+        };
 
-        // Create new ride with just the addresses
+        const pickupLocation = typeof value.pickupLocation === 'string' 
+            ? { address: formatAddress(value.pickupLocation) }
+            : { address: formatAddress(value.pickupLocation.address) };
+
+        const dropoffLocation = typeof value.dropoffLocation === 'string'
+            ? { address: formatAddress(value.dropoffLocation) }
+            : { address: formatAddress(value.dropoffLocation.address) };
+
         const newRide = await Ride.create({
-            userId,
-            pickupLocation: {
-                address: pickupLocation.address
-            },
-            dropoffLocation: {
-                address: dropoffLocation.address
-            },
-            status: "requested",
-            requestedAt: Date.now(),
-        });
-
-        // Wait for the pre-save middleware to complete and get the updated ride with coordinates and distance
-        await newRide.save();
-
-        // Calculate estimated amount based on the distance
-        const fareEstimate = calculateFare(newRide.distance, {
-            timeOfDay: new Date(),
-            vehicleType: 'standard',
-            trafficMultiplier: 1.1 // Could be determined by real-time traffic data
+            userId: value.userId,
+            pickupLocation,
+            dropoffLocation,
+            status: "requested"
         });
 
         res.status(201).json({
-            ride: newRide,
-            fareEstimate: {
-                ...fareEstimate,
-                currency: 'NGN',
-                distance: `${newRide.distance.toFixed(2)} km`,
-                note: 'This is an estimated fare. Actual fare may vary based on traffic and other factors.'
-            }
+            message: "Ride created successfully",
+            ride: newRide
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Failed to create ride", error });
+        console.error('Create ride error:', error);
+        res.status(500).json({ 
+            message: "Failed to create ride", 
+            error: error.message 
+        });
     }
 };
 

@@ -2,6 +2,9 @@ import Joi from "joi";
 
 export const createRideValidator = Joi.object({
     userId: Joi.string().required(),
+    status: Joi.string().valid('requested', 'pending', 'accepted', 'in-progress', 'completed', 'canceled'),
+    startedAt: Joi.date(),
+    completedAt: Joi.date().allow(null),
     pickupLocation: Joi.object({
         address: Joi.string().required()
     }).required(),

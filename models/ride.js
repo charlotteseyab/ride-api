@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import geocoding from "../middleware/geocoding.js";
+import { geocodeAddress, calculateDistance } from "../middleware/geocoding.js";
 
 const rideSchema = new Schema({
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
