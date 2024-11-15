@@ -3,12 +3,10 @@ import Joi from "joi";
 export const createRideValidator = Joi.object({
     userId: Joi.string().required(),
     pickupLocation: Joi.object({
-        type: Joi.string().valid('Point').required(),
-        coordinates: Joi.array().length(2).required()
+        address: Joi.string().required()
     }).required(),
     dropoffLocation: Joi.object({
-        type: Joi.string().valid('Point').required(),
-        coordinates: Joi.array().length(2).required()
+        address: Joi.string().required()
     }).required()
 });
 

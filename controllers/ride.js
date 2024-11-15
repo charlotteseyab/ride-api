@@ -1,6 +1,7 @@
 import { Ride } from "../models/ride.js";
 import { cancelRideValidator, createRideValidator, updateRideValidator } from "../validators/ride.js";
 import { getDistance } from "geolib";
+import { calculateFare } from '../utils/fareCalculator.js';
 
 
 
@@ -14,26 +15,38 @@ export const createRide = async (req, res) => {
 
         const { userId, pickupLocation, dropoffLocation } = value;
 
-        // Calculate the distance between pickup and dropoff
-        const distance = getDistance(
-            { latitude: pickupLocation.coordinates[1], longitude: pickupLocation.coordinates[0] },
-            { latitude: dropoffLocation.coordinates[1], longitude: dropoffLocation.coordinates[0] }
-        );
-
-        if (distance === null || distance === undefined) {
-            return res.status(500).json({ message: "Failed to calculate distance" });
-        }
-
+        // Create new ride with just the addresses
         const newRide = await Ride.create({
             userId,
-            pickupLocation,
-            dropoffLocation,
-            distance, // store the distance in the ride document
+            pickupLocation: {
+                address: pickupLocation.address
+            },
+            dropoffLocation: {
+                address: dropoffLocation.address
+            },
             status: "requested",
             requestedAt: Date.now(),
         });
 
-        res.status(201).json(newRide);
+        // Wait for the pre-save middleware to complete and get the updated ride with coordinates and distance
+        await newRide.save();
+
+        // Calculate estimated amount based on the distance
+        const fareEstimate = calculateFare(newRide.distance, {
+            timeOfDay: new Date(),
+            vehicleType: 'standard',
+            trafficMultiplier: 1.1 // Could be determined by real-time traffic data
+        });
+
+        res.status(201).json({
+            ride: newRide,
+            fareEstimate: {
+                ...fareEstimate,
+                currency: 'NGN',
+                distance: `${newRide.distance.toFixed(2)} km`,
+                note: 'This is an estimated fare. Actual fare may vary based on traffic and other factors.'
+            }
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Failed to create ride", error });
