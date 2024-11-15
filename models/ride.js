@@ -8,12 +8,20 @@ const rideSchema = new Schema({
 
     pickupLocation: {
         address: { type: String, required: true },
-        coordinates: { type: [Number] }  // [longitude, latitude]
+        coordinates: { 
+            type: [Number],
+            required: false,  // Make coordinates optional
+            default: undefined  // Don't set a default value
+        }
     },
 
     dropoffLocation: {
         address: { type: String, required: true },
-        coordinates: { type: [Number] }
+        coordinates: { 
+            type: [Number],
+            required: false,  // Make coordinates optional
+            default: undefined  // Don't set a default value
+        }
     },
 
     distance: { type: Number },
