@@ -136,21 +136,34 @@ export const cancelRide = async (req, res) => {
 
 export const getRideDetails = async (req, res) => {
     try {
+        console.log('Auth object in request:', req.auth); // Debug log
+        
+        if (!req.auth || !req.auth._id) {
+            return res.status(401).json({ 
+                error: "Unauthorized",
+                message: "No authentication data found in request" 
+            });
+        }
+
         const { rideId } = req.params;
-        const ride = await Ride.findById(rideId);
+        console.log('Looking for ride:', rideId); // Debug log
+        
+        const ride = await Ride.findOne({
+            _id: rideId,
+            userId: req.auth._id
+        });
+
         if (!ride) {
             return res.status(404).json({ message: "Ride not found" });
         }
 
-        // Calculate the distance dynamically if not stored
-        const distance = ride.distance || getDistance(
-            { latitude: ride.pickupLocation.coordinates[1], longitude: ride.pickupLocation.coordinates[0] },
-            { latitude: ride.dropoffLocation.coordinates[1], longitude: ride.dropoffLocation.coordinates[0] }
-        );
-
-        res.status(200).json({ ...ride.toObject(), distance });
+        res.status(200).json(ride);
     } catch (error) {
-        res.status(500).json({ message: "Failed to get ride details", error });
+        console.error('Get ride details error:', error);
+        res.status(500).json({ 
+            message: "Failed to get ride details", 
+            error: error.message 
+        });
     }
 };
 

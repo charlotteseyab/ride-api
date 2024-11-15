@@ -26,3 +26,21 @@ export const hasPermission = (action) => {
         }
     }
 }
+
+export const authenticateToken = async (req, res, next) => {
+    try {
+        console.log('Headers:', req.headers); // Log all headers
+        console.log('Auth header:', req.headers.authorization); // Log auth header specifically
+        
+        const authHeader = req.headers.authorization;
+        if (!authHeader) {
+            console.log('No auth header found');
+            return res.status(401).json({ error: "Unauthorized" });
+        }
+
+        // ... rest of the middleware
+    } catch (error) {
+        console.error('Auth middleware error:', error);
+        return res.status(401).json({ error: "Unauthorized" });
+    }
+};

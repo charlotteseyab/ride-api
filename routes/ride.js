@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { cancelRide, createRide, getRideDetails, updateRide } from "../controllers/ride.js";
+import { cancelRide, createRide, getHistory, getRideDetails, updateRide } from "../controllers/ride.js";
+import { isAuthenticated } from "../middleware/auth.js";
 
 export const rideRouter = Router()
 
@@ -9,7 +10,9 @@ rideRouter.patch("/rides/:rideId", updateRide);
 
 rideRouter.patch("/rides/:rideId/cancel", cancelRide);    
 
-rideRouter.get("/rides/:rideId", getRideDetails);  
+rideRouter.get("/rides/details/:rideId", isAuthenticated, getRideDetails);  
+
+rideRouter.get("/rides/history", isAuthenticated, getHistory);
 
 
 
